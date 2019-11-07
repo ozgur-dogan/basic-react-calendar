@@ -1,5 +1,6 @@
 import React from "react";
-import View from "./view.js";
+import PropTypes from "prop-types";
+import MonthView from "./monthView.js";
 const monthName = [
   "January",
   "February",
@@ -18,49 +19,68 @@ const monthName = [
 class Month extends React.Component {
   constructor(props) {
     super(props);
-    this.state = this.calculateMonth(props);
-    this.state = Object.assign(this.state,this.calculateActiveDays(props,this.state));
+    const { month, year, defaultActive, activeDays, passiveDays } = this.props;
+    const { firstDay, numberOfDays, monthName } = this.calculateMonth(
+      month,
+      year
+    );
+    const isDayActiveArr = this.calculateActiveDays(
+      defaultActive,
+      activeDays,
+      passiveDays
+    );
+    this.state = { firstDay, numberOfDays, monthName, isDayActiveArr };
   }
 
-  calculateMonth(props) {
-    if (props === undefined || props.month === undefined || props.year === undefined){ return null};
-    let firstDay = new Date(props.year, props.month, 1).getDay();
-    let numberOfDays = new Date(props.year, props.month+1, 0).getDate();
+  calculateMonth(month = 1, year = 2020) {
+    let firstDay = new Date(year, month, 1).getDay();
+    let numberOfDays = new Date(year, month + 1, 0).getDate();
 
     return {
       firstDay: firstDay,
       numberOfDays: numberOfDays,
-      monthName: monthName[props.month]
+      monthName: monthName[month]
     };
   }
 
-  calculateActiveDays(props,state){
-    let activeDays = new Array(state.numberOfDays+1);
-    activeDays.fill(props.defaultActive);
-    
-    if(props.defaultActive && props.passiveDays !== undefined){
-      props.passiveDays.forEach(day=>{
-        activeDays[day] = false;
+  calculateActiveDays(defaultActive = true, activeList = [], passiveList = []) {
+    let isDayActiveArr = new Array(32);
+    isDayActiveArr.fill(defaultActive);
+
+    if (defaultActive) {
+      passiveList.forEach(day => {
+        isDayActiveArr[day] = false;
+      });
+    } else {
+      activeList.forEach(day => {
+        isDayActiveArr[day] = true;
       });
     }
 
-  if(!props.defaultActive && props.activeDays !== undefined){
-      props.activeDays.forEach(day=>{
-        activeDays[day] = true;
-      })
-    }
-
-
-    return {activeDays};
+    return isDayActiveArr;
   }
+
   render() {
+    const { firstDay, numberOfDays, monthName, isDayActiveArr } = this.state;
     return (
-      <View
-        {...this.state}
+      <MonthView
+        firstDay={firstDay}
+        numberOfDays={numberOfDays}
+        monthName={monthName}
+        isDayActiveArr={isDayActiveArr}
         prevMonthAction={this.props.prevMonthAction}
         nextMonthAction={this.props.nextMonthAction}
       />
     );
   }
 }
+
+Month.propTypes = {
+  month: PropTypes.number, // month as number
+  year: PropTypes.number, // year as number
+  defaultActive: PropTypes.bool, // whether default day status is active
+  activeDays: PropTypes.array, // list of active days
+  passiveDays: PropTypes.array // list of passive days
+};
+
 export default Month;

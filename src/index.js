@@ -3,7 +3,10 @@ import ReactDOM from "react-dom";
 import "./index.css";
 import Calendar from "./calendar";
 
-ReactDOM.render(<Calendar defaultActive={false} passiveDays={[new Date()]}/>, document.getElementById("calendar"));
+ReactDOM.render(
+  <Calendar defaultActive={false} passiveDays={[new Date()]} />,
+  document.getElementById("calendar")
+);
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.

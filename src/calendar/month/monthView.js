@@ -1,7 +1,8 @@
 import React from "react";
+import PropTypes from "prop-types";
 import Day from "../day";
-import "./index.css";
-export default class extends React.Component {
+import "./monthView.scss";
+class MonthView extends React.Component {
   render() {
     const {
       firstDay,
@@ -9,24 +10,24 @@ export default class extends React.Component {
       monthName,
       prevMonthAction,
       nextMonthAction,
-      activeDays
+      isDayActiveArr
     } = this.props;
 
-    // prev month button
+    // render prev month button
     let prevMonth = prevMonthAction ? (
       <div className="calNavigation" onClick={prevMonthAction}>
         {"<"}
       </div>
     ) : null;
 
-    // next month button
+    // render next month button
     let nextMonth = nextMonthAction ? (
       <div className="calNavigation" onClick={nextMonthAction}>
         {">"}
       </div>
     ) : null;
 
-    // calculate days
+    // render days
     let days = [];
     let weeks = [];
     for (let i = 0; i < firstDay; i++) {
@@ -35,12 +36,12 @@ export default class extends React.Component {
     for (let i = 1; i <= numberOfDays; i++) {
       days.push(
         <div className="dayCell" key={`day-${i}`}>
-          <Day number={i} isActive={activeDays[i]} />
+          <Day number={i} isActive={isDayActiveArr[i]} />
         </div>
       );
     }
 
-    // calculate weeks
+    // render weeks (aggregate day cells)
     let weekNumber = 0;
     while (weekNumber < 6) {
       weeks.push(
@@ -52,7 +53,7 @@ export default class extends React.Component {
 
     // render
     return (
-      <div className="month">
+      <div className="monthView">
         <div className="header">
           {prevMonth}
           <div className="monthName">{monthName}</div>
@@ -63,3 +64,13 @@ export default class extends React.Component {
     );
   }
 }
+MonthView.propTypes = {
+  firstDay: PropTypes.number.isRequired, // how many white cells needed for the first week
+  numberOfDays: PropTypes.number.isRequired, // how many day exist in the month
+  monthName: PropTypes.string.isRequired, // name of the month
+  prevMonthAction: PropTypes.func, // fn to call on prev button clicked
+  nextMonthAction: PropTypes.func, // fn to call on next button clicked
+  isDayActiveArr: PropTypes.array.isRequired // bool arr shows whether the day is active or not
+};
+
+export default MonthView;

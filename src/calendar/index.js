@@ -1,62 +1,42 @@
 import React from "react";
-import Calendar from "./view.js";
-export default class extends React.Component {
+import PropTypes from "prop-types";
+import CalendarView from "./calendarView.js";
+class Calendar extends React.Component {
   constructor(props) {
     super(props);
+    const {
+      initialDate,
+      defaultActive,
+      activeDays,
+      activeRanges,
+      passiveDays,
+      passiveRanges
+    } = props;
 
-    let initialDate = props.initialDate || new Date();
-
-    console.log(initialDate, initialDate.getMonth(), initialDate.getFullYear());
+    let date = initialDate || new Date();
 
     this.state = {
-      defaultActive: props.defaultActive || true,
-      activeDays: this.calculateActiveDays(props),
-      passiveDays: this.calculatePassiveDays(props),
-      month: initialDate.getMonth(),
-      year: initialDate.getFullYear()
+      defaultActive: defaultActive || true,
+      activeDays: this.aggregateDays(activeDays, activeRanges),
+      passiveDays: this.aggregateDays(passiveDays, passiveRanges),
+      month: date.getMonth(),
+      year: date.getFullYear()
     };
-    console.log(this.state);
   }
-  calculateActiveDays(props) {
-    let activeDays = {};
-    if (props.activeRanges) {
-      props.activeRanges.forEach(range => {
-        const { from, to } = range;
-        let tempDate = new Date().setDate(from.getDate() + 0);
-
-        while (tempDate <= to) {
-          this.addDay(activeDays, tempDate);
-          tempDate = tempDate.setDate(tempDate.getDate() + 1);
-        }
-      });
-    }
-    if (props.activeDays) {
-      props.activeDays.forEach(day => {
-        this.addDay(activeDays, day);
-      });
-    }
-    return activeDays;
-  }
-
-  calculatePassiveDays(props) {
-    let passiveDays = {};
-    if (props.passiveRanges) {
-      props.passiveRanges.forEach(range => {
-        const { from, to } = range;
-        let tempDate = new Date().setDate(from.getDate() + 0);
-
-        while (tempDate <= to) {
-          this.addDay(passiveDays, tempDate);
-          tempDate = tempDate.setDate(tempDate.getDate() + 1);
-        }
-      });
-    }
-    if (props.passiveDays) {
-      props.passiveDays.forEach(day => {
-        this.addDay(passiveDays, day);
-      });
-    }
-    return passiveDays;
+  aggregateDays(days = [], ranges = []) {
+    let map = new Map();
+    ranges.forEach(range => {
+      const { from, to } = range;
+      let tempDate = new Date().setDate(from.getDate() + 0);
+      while (tempDate <= to) {
+        this.addDay(map, tempDate);
+        tempDate = tempDate.setDate(tempDate.getDate() + 1);
+      }
+    });
+    days.forEach(day => {
+      this.addDay(map, day);
+    });
+    return map;
   }
 
   addDay(map, date) {
@@ -75,28 +55,44 @@ export default class extends React.Component {
   prevMonthAction() {
     let { month, year } = this.state;
     month--;
-    if (month < 1) {
-      month = 12;
+    if (month < 0) {
+      month = 11;
       year--;
     }
-    this.setState({ month, year });
+    this.setState({ month: month, year: year });
   }
   nextMonthAction() {
     let { month, year } = this.state;
     month++;
-    if (month > 12) {
-      month = 1;
+    if (month > 11) {
+      month = 0;
       year++;
     }
-    this.setState({ month, year });
+    this.setState({ month: month, year: year });
   }
   render() {
+    const { defaultActive, activeDays, passiveDays, month, year } = this.state;
     return (
-      <Calendar
-        {...this.state}
+      <CalendarView
+        defaultActive={defaultActive}
+        activeDays={activeDays}
+        passiveDays={passiveDays}
+        month={month}
+        year={year}
         prevMonthAction={this.prevMonthAction.bind(this)}
         nextMonthAction={this.nextMonthAction.bind(this)}
       />
     );
   }
 }
+
+Calendar.propTypes = {
+  initialDate: PropTypes.instanceOf(Date),
+  defaultActive: PropTypes.bool,
+  activeDays: PropTypes.array,
+  activeRanges: PropTypes.array,
+  passiveDays: PropTypes.array,
+  passiveRanges: PropTypes.array
+};
+
+export default Calendar;
