@@ -7,9 +7,9 @@ export default class extends React.Component {
       firstDay,
       numberOfDays,
       monthName,
-      firstActiveDay,
       prevMonthAction,
-      nextMonthAction
+      nextMonthAction,
+      activeDays
     } = this.props;
 
     // prev month button
@@ -32,10 +32,10 @@ export default class extends React.Component {
     for (let i = 0; i < firstDay; i++) {
       days.push(<div className="dayCell" key={`blankday-${i}`}></div>);
     }
-    for (let i = 1; i < numberOfDays + 1; i++) {
+    for (let i = 1; i <= numberOfDays; i++) {
       days.push(
         <div className="dayCell" key={`day-${i}`}>
-          <Day number={i} isActive={i >= firstActiveDay} />
+          <Day number={i} isActive={activeDays[i]} />
         </div>
       );
     }

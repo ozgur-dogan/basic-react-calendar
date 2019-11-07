@@ -18,65 +18,47 @@ const monthName = [
 class Month extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { month: props.month, year: props.year };
+    this.state = this.calculateMonth(props);
+    this.state = Object.assign(this.state,this.calculateActiveDays(props,this.state));
   }
 
-  calculateMonth(month, year) {
-    if (month === undefined || year === undefined) return null;
-    let firstDay = new Date(year, month - 1, 1).getDay();
-    let numberOfDays = new Date(year, month, 0).getDate();
-    let firstActiveDay = 0;
+  calculateMonth(props) {
+    if (props === undefined || props.month === undefined || props.year === undefined){ return null};
+    let firstDay = new Date(props.year, props.month, 1).getDay();
+    let numberOfDays = new Date(props.year, props.month+1, 0).getDate();
 
-    let currentDate = new Date();
-    if (currentDate.getFullYear() > year) {
-      firstActiveDay = numberOfDays + 1;
-    } else if (currentDate.getMonth() + 1 > month) {
-      firstActiveDay = numberOfDays + 1;
-    } else if (
-      currentDate.getFullYear() === year &&
-      currentDate.getMonth() + 1 === month
-    ) {
-      firstActiveDay = currentDate.getDate();
-    }
-    console.log({ month, year, numberOfDays, firstDay });
     return {
       firstDay: firstDay,
       numberOfDays: numberOfDays,
-      monthName: monthName[month - 1],
-      firstActiveDay: firstActiveDay
+      monthName: monthName[props.month]
     };
   }
 
-  prevMonthAction(){
-      let {month,year} = this.state;
-      month--;
-      if(month < 1){
-        month = 12;
-        year--;
-      }
-      this.setState({month,year});
-  }
-  nextMonthAction(){
-    let {month,year} = this.state;
-      month++;
-      if(month > 12){
-        month = 1;
-        year++;
-      }
-      this.setState({month,year});
-}
-
-  render() {
-    const { month, year } = this.state;
-    let currentMonthProps = this.calculateMonth(month, year);
-    if (currentMonthProps === null) {
-      return null;
+  calculateActiveDays(props,state){
+    let activeDays = new Array(state.numberOfDays+1);
+    activeDays.fill(props.defaultActive);
+    
+    if(props.defaultActive && props.passiveDays !== undefined){
+      props.passiveDays.forEach(day=>{
+        activeDays[day] = false;
+      });
     }
+
+  if(!props.defaultActive && props.activeDays !== undefined){
+      props.activeDays.forEach(day=>{
+        activeDays[day] = true;
+      })
+    }
+
+
+    return {activeDays};
+  }
+  render() {
     return (
       <View
-        {...this.calculateMonth(month, year)}
-        prevMonthAction={this.prevMonthAction.bind(this)}
-        nextMonthAction={this.nextMonthAction.bind(this)}
+        {...this.state}
+        prevMonthAction={this.props.prevMonthAction}
+        nextMonthAction={this.props.nextMonthAction}
       />
     );
   }

@@ -1,12 +1,9 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import Day from './calendar/day';
-import Month from './calendar/month';
+import React from "react";
+import ReactDOM from "react-dom";
+import "./index.css";
+import Calendar from "./calendar";
 
-
-ReactDOM.render(<Day />, document.getElementById('day'));
-ReactDOM.render(<Month month={11} year={2019}/>, document.getElementById('month'));
+ReactDOM.render(<Calendar defaultActive={false} passiveDays={[new Date()]}/>, document.getElementById("calendar"));
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
