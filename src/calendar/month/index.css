@@ -1,0 +1,58 @@
+ .month{
+     border-radius: 5px;
+     border:1px solid #bcbcbc;
+     width: 100%;
+     display: inline-block;
+     min-width: 100px;
+     min-height: 50px;
+     padding: 5px;
+     max-width: 500px;
+ }
+
+ .month .header{
+     text-align: center;
+     height: 40px;
+ }
+
+ .month .monthName,.month .calNavigation{
+     display: inline-block;
+     padding: 0px 10px;
+ }
+ .month .monthName{
+     width: 100px;
+ }
+ .month .calNavigation{
+     width: 30px;
+     cursor: pointer;
+ }
+
+ .month .week{
+     height: 40px;
+ }
+
+ .month .dayCell{
+     min-width: 14.2%;
+     font-size: 15px;
+     display: inline-block;
+     text-align: center;
+ }
+
+ .month .day{
+     text-align: center;
+     width: 30px;
+     height: 30px;
+     line-height: 30px;
+     border-radius: 15px;
+     display: inline-block;
+ }
+
+ .month .day.inactive{
+     color: #dfdfdf;
+ }
+
+ .month .day.active{
+     cursor: pointer;
+ }
+ .month .day.active:hover{
+     background-color: #ccc;
+ }
