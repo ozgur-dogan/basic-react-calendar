@@ -8,22 +8,22 @@ class MonthView extends React.Component {
       firstDay,
       numberOfDays,
       monthName,
+      year,
       prevMonthAction,
-      nextMonthAction,
-      isDayActiveArr
+      nextMonthAction
     } = this.props;
 
     // render prev month button
     let prevMonth = prevMonthAction ? (
       <div className="calNavigation" onClick={prevMonthAction}>
-        {"<"}
+        {"⇦"}
       </div>
     ) : null;
 
     // render next month button
     let nextMonth = nextMonthAction ? (
       <div className="calNavigation" onClick={nextMonthAction}>
-        {">"}
+        {"⇨"}
       </div>
     ) : null;
 
@@ -36,7 +36,7 @@ class MonthView extends React.Component {
     for (let i = 1; i <= numberOfDays; i++) {
       days.push(
         <div className="dayCell" key={`day-${i}`}>
-          <Day number={i} isActive={isDayActiveArr[i]} />
+          <Day number={i} isActive={true} />
         </div>
       );
     }
@@ -56,7 +56,7 @@ class MonthView extends React.Component {
       <div className="monthView">
         <div className="header">
           {prevMonth}
-          <div className="monthName">{monthName}</div>
+          <div className="monthName">{`${monthName} ${year}`}</div>
           {nextMonth}
         </div>
         <div className="days">{weeks}</div>
@@ -70,7 +70,6 @@ MonthView.propTypes = {
   monthName: PropTypes.string.isRequired, // name of the month
   prevMonthAction: PropTypes.func, // fn to call on prev button clicked
   nextMonthAction: PropTypes.func, // fn to call on next button clicked
-  isDayActiveArr: PropTypes.array.isRequired // bool arr shows whether the day is active or not
 };
 
 export default MonthView;

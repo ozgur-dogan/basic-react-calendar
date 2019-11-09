@@ -5,7 +5,7 @@ import Calendar from "./calendar";
 
 ReactDOM.render(
   <Calendar defaultActive={false} passiveDays={[new Date()]} />,
-  document.getElementById("calendar")
+  document.getElementById("root")
 );
 
 // If you want your app to work offline and load faster, you can change

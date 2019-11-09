@@ -19,55 +19,32 @@ const monthName = [
 class Month extends React.Component {
   constructor(props) {
     super(props);
-    const { month, year, defaultActive, activeDays, passiveDays } = this.props;
-    const { firstDay, numberOfDays, monthName } = this.calculateMonth(
-      month,
-      year
-    );
-    const isDayActiveArr = this.calculateActiveDays(
-      defaultActive,
-      activeDays,
-      passiveDays
-    );
-    this.state = { firstDay, numberOfDays, monthName, isDayActiveArr };
+    const { firstDay, numberOfDays, monthName, year } = this.calculateMonth(props.date);
+    this.state = { firstDay, numberOfDays, monthName, year};
   }
 
-  calculateMonth(month = 1, year = 2020) {
+  calculateMonth(date) {
+    let year = date.getFullYear();
+    let month = date.getMonth();
     let firstDay = new Date(year, month, 1).getDay();
     let numberOfDays = new Date(year, month + 1, 0).getDate();
 
     return {
       firstDay: firstDay,
       numberOfDays: numberOfDays,
-      monthName: monthName[month]
+      monthName: monthName[month],
+      year : year
     };
   }
 
-  calculateActiveDays(defaultActive = true, activeList = [], passiveList = []) {
-    let isDayActiveArr = new Array(32);
-    isDayActiveArr.fill(defaultActive);
-
-    if (defaultActive) {
-      passiveList.forEach(day => {
-        isDayActiveArr[day] = false;
-      });
-    } else {
-      activeList.forEach(day => {
-        isDayActiveArr[day] = true;
-      });
-    }
-
-    return isDayActiveArr;
-  }
-
   render() {
-    const { firstDay, numberOfDays, monthName, isDayActiveArr } = this.state;
+    const { firstDay, numberOfDays, monthName,year} = this.state;
     return (
       <MonthView
         firstDay={firstDay}
         numberOfDays={numberOfDays}
         monthName={monthName}
-        isDayActiveArr={isDayActiveArr}
+        year={year}
         prevMonthAction={this.props.prevMonthAction}
         nextMonthAction={this.props.nextMonthAction}
       />
@@ -76,9 +53,7 @@ class Month extends React.Component {
 }
 
 Month.propTypes = {
-  month: PropTypes.number, // month as number
-  year: PropTypes.number, // year as number
-  defaultActive: PropTypes.bool, // whether default day status is active
+  date: PropTypes.instanceOf(Date), // month as number
   activeDays: PropTypes.array, // list of active days
   passiveDays: PropTypes.array // list of passive days
 };

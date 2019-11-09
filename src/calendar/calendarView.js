@@ -1,47 +1,124 @@
 import React from "react";
 import PropTypes from "prop-types";
 import Month from "./month";
-
+import "./calendarView.scss";
 class CalendarView extends React.Component {
-  getActivePassiveMonth(map, year, month) {
-    if (map[year] === undefined || map[year][month] === undefined) {
-      return [];
-    } else {
-      return map[year][month];
+  constructor(props) {
+    super(props);
+    this.state = { left: 0 };
+  }
+  componentDidUpdate(prevProps){
+    const currentDate = this.props.date.getTime();
+    if(prevProps.date.getTime() === currentDate){
+      return;
     }
+    this.setState({
+      prevMonthAnimation: false,
+      nextMonthAnimation: false,
+      isLocked: false,
+      left:0
+    })
+  }
+  prevMonthAction() {
+    const { isLocked } = this.state;
+    const { date } = this.props;
+    if (isLocked) {
+      return;
+    }
+    let year = date.getFullYear();
+    let month = date.getMonth();
+    let newDate = new Date(year, month - 1, 1);
+
+    const t = this;
+    this.setState({
+      prevMonthAnimation: true,
+      nextMonthAnimation: false,
+      isLocked: true,
+      left: 0
+    });
+    let counter = 100;
+    let thisInterval = setInterval(() => {
+      counter -= 2;
+      if (counter > 0) {
+        t.setState({ left: (100 - counter) * -1});
+      } else {
+        clearInterval(thisInterval);
+        t.props.setDate(newDate);
+      }
+    }, 16);
+  }
+  nextMonthAction() {
+    const { isLocked } = this.state;
+    const { date } = this.props;
+    if (isLocked) {
+      return;
+    }
+    let year = date.getFullYear();
+    let month = date.getMonth();
+    let newDate = new Date(year, month + 1, 1);
+
+    const t = this;
+    this.setState({
+      prevMonthAnimation: false,
+      nextMonthAnimation: true,
+      isLocked: true,
+      left: 0
+    });
+    let counter = 100;
+    let thisInterval = setInterval(() => {
+      counter -= 2;
+      if (counter > 0) {
+        t.setState({ left: 100 - counter });
+      } else {
+        clearInterval(thisInterval);
+        t.props.setDate(newDate);
+      }
+    }, 16);
+  }
+
+  renderPrevMonth() {
+    const { date } = this.props;
+    let year = date.getFullYear();
+    let month = date.getMonth();
+    let newDate = new Date(year, month - 1, 1);
+    return (
+      <div className="prevMonth">
+        <Month key={"prevMonth"} date={newDate} />
+      </div>
+    );
+  }
+  renderNextMonth() {
+    const { date } = this.props;
+    let year = date.getFullYear();
+    let month = date.getMonth();
+    let newDate = new Date(year, month + 1, 1);
+    return (
+      <div className="nextMonth">
+        <Month key={"nextMonth"} date={newDate} />
+      </div>
+    );
   }
   render() {
-    const {
-      activeDays,
-      passiveDays,
-      year,
-      month,
-      prevMonthAction,
-      nextMonthAction
-    } = this.props;
+    const { date } = this.props;
+    const { nextMonthAnimation, prevMonthAnimation, left,  isLocked } = this.state;
     return (
       <div className="calendarView">
-        <Month
-          key={`month-${year}-${month}`}
-          year={year}
-          month={month}
-          activeDays={this.getActivePassiveMonth(activeDays, year, month)}
-          passiveDays={this.getActivePassiveMonth(passiveDays, year, month)}
-          prevMonthAction={prevMonthAction}
-          nextMonthAction={nextMonthAction}
-        />
+        {prevMonthAnimation && this.renderPrevMonth()}
+        {nextMonthAnimation && this.renderNextMonth()}
+        <div className="currentMonth" style={{ left: left + "%" }}>
+          <Month
+            key={date}
+            date={date}
+            prevMonthAction={!isLocked ? this.prevMonthAction.bind(this) : undefined}
+            nextMonthAction={!isLocked ? this.nextMonthAction.bind(this) : undefined}
+          />
+        </div>
       </div>
     );
   }
 }
-
 CalendarView.propTypes = {
-  defaultActive: PropTypes.bool, // is default status of day active
-  activeDays: PropTypes.instanceOf(Map), // arr of active days
-  passiveDays: PropTypes.instanceOf(Map), // arr of passive days
-  month: PropTypes.number, // month in number
-  year: PropTypes.number, // yearn in number
-  prevMonthAction: PropTypes.func, // when press prev month button
-  nextMonthAction: PropTypes.func // when press prev month button
+  date: PropTypes.instanceOf(Date), // date
+  setDate: PropTypes.func // setDate
 };
 export default CalendarView;

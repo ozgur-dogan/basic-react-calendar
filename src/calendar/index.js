@@ -5,94 +5,44 @@ class Calendar extends React.Component {
   constructor(props) {
     super(props);
     const {
-      initialDate,
-      defaultActive,
-      activeDays,
-      activeRanges,
-      passiveDays,
-      passiveRanges
+      initialDate
     } = props;
 
     let date = initialDate || new Date();
-
     this.state = {
-      defaultActive: defaultActive || true,
-      activeDays: this.aggregateDays(activeDays, activeRanges),
-      passiveDays: this.aggregateDays(passiveDays, passiveRanges),
-      month: date.getMonth(),
-      year: date.getFullYear()
+      date: date
     };
   }
-  aggregateDays(days = [], ranges = []) {
-    let map = new Map();
-    ranges.forEach(range => {
-      const { from, to } = range;
-      let tempDate = new Date().setDate(from.getDate() + 0);
-      while (tempDate <= to) {
-        this.addDay(map, tempDate);
-        tempDate = tempDate.setDate(tempDate.getDate() + 1);
-      }
-    });
-    days.forEach(day => {
-      this.addDay(map, day);
-    });
-    return map;
-  }
-
-  addDay(map, date) {
+  prevMonthAction() {
+    let { date } = this.state;
     let year = date.getFullYear();
     let month = date.getMonth();
-    let day = date.getDate();
-
-    if (map[year] === undefined) {
-      map[year] = {};
-    }
-    if (map[year][month] === undefined) {
-      map[year][month] = [];
-    }
-    map[year][month].push(day);
-  }
-  prevMonthAction() {
-    let { month, year } = this.state;
-    month--;
-    if (month < 0) {
-      month = 11;
-      year--;
-    }
-    this.setState({ month: month, year: year });
+    let newDate = new Date(year,month-1,1);
+    this.setState({ date: newDate });
   }
   nextMonthAction() {
-    let { month, year } = this.state;
-    month++;
-    if (month > 11) {
-      month = 0;
-      year++;
-    }
-    this.setState({ month: month, year: year });
+    let { date } = this.state;
+    let year = date.getFullYear();
+    let month = date.getMonth();
+    let newDate = new Date(year,month+1,1);
+    this.setState({ date: newDate });
+  }
+  setDate(date){
+    this.setState({date:date});
   }
   render() {
-    const { defaultActive, activeDays, passiveDays, month, year } = this.state;
+    const { date } = this.state;
     return (
       <CalendarView
-        defaultActive={defaultActive}
-        activeDays={activeDays}
-        passiveDays={passiveDays}
-        month={month}
-        year={year}
-        prevMonthAction={this.prevMonthAction.bind(this)}
-        nextMonthAction={this.nextMonthAction.bind(this)}
+        setDate = {this.setDate.bind(this)}
+        date={date}
       />
     );
   }
 }
 
 Calendar.propTypes = {
-  initialDate: PropTypes.instanceOf(Date),
-  defaultActive: PropTypes.bool,
-  activeDays: PropTypes.array,
-  activeRanges: PropTypes.array,
-  passiveDays: PropTypes.array,
-  passiveRanges: PropTypes.array
+  initialDate: PropTypes.instanceOf(Date)
 };
 
 export default Calendar;
