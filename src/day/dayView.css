@@ -1,0 +1,14 @@
+.dayView {
+  text-align: center;
+  width: 30px;
+  height: 30px;
+  line-height: 30px;
+  border-radius: 5px;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.dayView:hover{
+  background-color: #e0e0e0;
+  font-weight: bold;
+}

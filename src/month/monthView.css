@@ -1,0 +1,32 @@
+.monthView {
+  border-radius: 5px;
+  border: 1px solid #bcbcbc;
+  width: 100%;
+  display: inline-block;
+  min-width: 100px;
+  min-height: 50px;
+  padding: 5px;
+  max-width: 500px;
+}
+.header {
+  text-align: center;
+  height: 40px;
+}
+.monthName{
+  display: inline-block;
+  padding: 0px 10px;
+}
+.monthName {
+  width: 160px;
+}
+
+.week {
+  height: 40px;
+}
+
+.dayCell {
+  min-width: 14.2%;
+  font-size: 15px;
+  display: inline-block;
+  text-align: center;
+}

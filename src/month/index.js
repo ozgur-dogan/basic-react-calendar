@@ -17,10 +17,15 @@ const monthName = [
 ];
 
 class Month extends React.Component {
+  static propTypes = {
+    initialDate: PropTypes.instanceOf(Date)
+  };
   constructor(props) {
     super(props);
-    const { firstDay, numberOfDays, monthName, year } = this.calculateMonth(props.date);
-    this.state = { firstDay, numberOfDays, monthName, year};
+    const { firstDay, numberOfDays, monthName, year } = this.calculateMonth(
+      props.date
+    );
+    this.state = { firstDay, numberOfDays, monthName, year };
   }
 
   calculateMonth(date) {
@@ -33,29 +38,33 @@ class Month extends React.Component {
       firstDay: firstDay,
       numberOfDays: numberOfDays,
       monthName: monthName[month],
-      year : year
+      year: year
     };
   }
 
+  onClick(day) {
+    let date = this.props.date.getTime();
+    let selectedDate = new Date(date);
+    selectedDate.setDate(day);
+    selectedDate.setHours(0);
+    selectedDate.setMinutes(0);
+    selectedDate.setSeconds(0);
+    selectedDate.setMilliseconds(1);
+    this.props.onClick(selectedDate);
+  }
+
   render() {
-    const { firstDay, numberOfDays, monthName,year} = this.state;
+    const { firstDay, numberOfDays, monthName, year } = this.state;
     return (
       <MonthView
         firstDay={firstDay}
         numberOfDays={numberOfDays}
         monthName={monthName}
         year={year}
-        prevMonthAction={this.props.prevMonthAction}
-        nextMonthAction={this.props.nextMonthAction}
+        onClick={this.onClick.bind(this)}
       />
     );
   }
 }
-
-Month.propTypes = {
-  date: PropTypes.instanceOf(Date), // month as number
-  activeDays: PropTypes.array, // list of active days
-  passiveDays: PropTypes.array // list of passive days
-};
 
 export default Month;
